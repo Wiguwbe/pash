@@ -65,24 +65,33 @@ full_command
 	| YYEOF	{ *out = NULL; }
 
 semi_list
-	/* TODO pass straight if single */
 	: and_or
 	  {
-	  	/* TODO pass it straight */
-	  	$$ = ast_semi_new($and_or);
+	  	$$ = $1;
 	  }
 	| semi_list[list] T_SEMI and_or
 	  {
-	  	/* TODO is `list` is not yet a list, make it */
-	  	$$ = ast_semi_append($list, $and_or);
+	  	$$ = ast_semi_append(
+			$list->kind == AST_SEMI_LIST
+				? $list
+				: ast_semi_new($list),
+			$and_or
+		);
 	  }
 
 nl_list
 	/* TODO same as above */
 	: and_or
-	  { $$ = ast_semi_new($and_or); }
+	  { $$ = $1; }
 	| nl_list[list] separator and_or
-	  { $$ = ast_semi_append($list, $and_or); }
+	  {
+	  	$$ = ast_semi_append(
+			$list->kind == AST_SEMI_LIST
+				? $list
+				: ast_semi_new($list),
+			$and_or
+		);
+	  }
 
 and_or
 	: pipeline	{ $$ = $1; }
@@ -94,9 +103,18 @@ and_or
 pipeline
 	/* TODO same as semi/nl list: passthrough if single */
 	: command
-	  { $$ = ast_pipeline_new($command); }
+	  {
+	  	$$ = $1;
+	  }
 	| pipeline[list] T_PIPE nl_opt command
-	  { $$ = ast_pipeline_append($list, $command); }
+	  {
+	  	$$ = ast_pipeline_append(
+			$list->kind == AST_PIPELINE
+				? $list
+				: ast_pipeline_new($list),
+			$command
+		);
+	  }
 
 command
 	: if_command
@@ -169,7 +187,10 @@ for_command
 	  nl_list[body]
 	  separator
 	  T_DONE
-	  { $$ = ast_for_new($ident, $list, $body); }
+	  {
+	  	$$ = ast_for_new($ident, $list, $body);
+		free($ident);
+	  }
 
 compound_command
 	: T_LBRACE
@@ -184,7 +205,10 @@ def_command
 	  T_IDENT[name]
 	  T_LPAREN T_RPAREN
 	  compound_command[body]
-	  { $$ = ast_def_new($name, $body); }
+	  {
+	  	$$ = ast_def_new($name, $body);
+		free($name);
+	  }
 
 simple_command
 	: word_list
@@ -205,9 +229,9 @@ word_list
 	  { $$ = ast_word_list_append($1, $2); }
 
 word
-	: T_WORD		{ $$ = ast_word_new($1); }
-	| T_IDENT		{ $$ = ast_word_new($1); }
-	| T_VAR			{ $$ = ast_var_new($1); }
+	: T_WORD		{ $$ = ast_word_new($1); free($1); }
+	| T_IDENT		{ $$ = ast_word_new($1); free($1); }
+	| T_VAR			{ $$ = ast_var_new($1); free($1); }
 	| command_substitution	{ $$ = $1; }
 	/*| var_expansion /* not implemented yet */
 
