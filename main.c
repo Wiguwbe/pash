@@ -5,6 +5,7 @@
 #include "pash.h"
 
 // if printer_define
+#include "pash.tab.h"
 #include "printer.h"
 
 void yyerror(void *_unused, char *msg)
@@ -16,7 +17,11 @@ void yyerror(void *_unused, char *msg)
 int main()
 {
 #ifdef YYDEBUG
-	//yydebug = 1;
+	{
+		char *yydebug_env = getenv("YYDEBUG");
+		if (yydebug_env && *yydebug_env == '1')
+			yydebug = 1;
+	}
 #endif
 
 	struct pash pash;

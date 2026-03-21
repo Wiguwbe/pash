@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "pash.tab.h"
+
+char *q_string(char *orig);
 %}
 
 %option noyywrap
@@ -16,14 +18,20 @@
 whitespace	[ \t]+
 newline		\n
 
-ident		[a-zA-Z_][a-zA-Z0-9_]*
-word		[^ \t\n|&]+
+w_first		[^ \t\n|&,:${[(;'"]
+w_middle	[^ \t\n]
+w_last		[^ \t\n|&,:}\]);'"]
+
+ident		[a-zA-Z_][a-zA-Z0-9_-]*
+word		{w_first}({w_middle}*{w_last})?
 
 %%
 
-	/*"\\"{newline}	* skip */
 {whitespace}	/* skip */
+"\\"{newline}	/* whitespace, skip */
+
 {newline}	{ return T_NEWLINE; }
+"#"[^\n]{newline}	{ return T_NEWLINE; }
 
 "&&"	{ return T_AND; }
 "||"	{ return T_OR; }
@@ -60,10 +68,15 @@ word		[^ \t\n|&]+
 "def"	{ return T_DEF; }
 "in"	{ return T_IN; }
 
-	/*{ident} { yylval.T_IDENT = dup_yytext(); return T_IDENT; }*/
+{ident} { yylval->T_IDENT = strdup(yytext); return T_IDENT; }
 {word}	{ yylval->T_WORD = strdup(yytext); return T_WORD; }
-\"(\\.|[^"\\])\"	{ /* quoted strings */
-				;
+\"(\\.|[^"\\])*\"	{ /* quoted strings */
+				yylval->T_WORD = q_string(yytext);
+				return T_WORD;
+			}
+\'(\\.|[^\\'])*\'	{
+				yylval->T_WORD = q_string(yytext);
+				return T_WORD;
 			}
 
 .	{
@@ -72,3 +85,37 @@ word		[^ \t\n|&]+
 	}
 
 %%
+
+char *q_string(char *orig)
+{
+	// will _probably_ be shorter that orig
+	char *out = (char*)malloc(strlen(orig));
+
+	char *ptr_in = orig;
+	char *ptr_out = out;
+
+	char quote = *(ptr_in++);
+	while(*ptr_in != quote)
+	{
+		switch (*ptr_in)
+		{
+		case '\\':
+			if (ptr_in[1] == quote)
+			{
+				*(ptr_out++) = ptr_in[1];
+				ptr_in += 2;
+			}
+			else
+			{
+				*(ptr_out++) = *(ptr_in++);
+				*(ptr_out++) = *(ptr_in++);
+			}
+			break;
+		default:
+			*(ptr_out++) = *(ptr_in++);
+		}
+	}
+	*ptr_out = 0;
+
+	return out;
+}
