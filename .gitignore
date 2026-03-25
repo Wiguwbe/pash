@@ -2,3 +2,5 @@
 *.yy.*
 *.o
 pash
+*.gen.*
+packcc

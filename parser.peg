@@ -1,0 +1,177 @@
+#
+# grammar file (packcc)
+#
+
+%header {
+#include "ast.h"
+}
+
+%import "defs.peg"
+%value "ast_node_t *"
+
+full_command
+<-	NL
+/	WS* EOF
+/	l:semi_list NL
+/	l:semi_list WS* EOF
+
+# TODO maybe use "SEMI_SEP" to account for WS
+semi_list
+<-	l:semi_list SEMI r:and_or
+/	r:and_or
+
+nl_list
+<-	l:nl_list SEP r:and_or
+/	r:and_or
+
+and_or
+<-	l:and_or WS* AND NL* r:pipeline
+/	l:and_or WS* OR NL* r:pipeline
+/	r:pipeline
+
+pipeline
+<-	l:pipeline WS* PIPE NL* r:command
+/	r:command
+
+command
+<-	WS* _command
+
+_command
+<-	if_command
+/	while_command
+/	for_command
+/	compound_command
+/	def_command
+/	simple_command
+
+if_command
+<-	IF
+	NL*
+	c:nl_list
+	SEP
+	THEN
+	NL*
+	b:nl_list
+	SEP
+	else_branch?
+	FI
+
+else_branch
+<-	ELSE
+	NL*
+	b:nl_list
+	SEP
+/	ELIF
+	NL*
+	c:nl_list
+	SEP
+	THEN
+	NL*
+	b:nl_list
+	SEP
+	else_branch?
+
+while_command
+<-	WHILE
+	NL*
+	c:nl_list
+	SEP
+	DO
+	NL*
+	b:nl_list
+	SEP
+	DONE
+
+for_command
+<-	FOR
+	i:IDENT
+	IN
+	l:obj_list
+	SEP
+	DO
+	NL*
+	b:nl_list
+	SEP
+	DONE
+
+# TODO probably need to verify that it's a single '{' (e.g. not '{{{')
+compound_command
+<-	'{'
+	NL*
+	b:nl_list
+	SEP
+	'}'
+
+def_command
+<-	n:IDENT WS*
+	'(' WS* ')' WS*
+	b:compound_command
+
+simple_command
+<-	a:word WS+ b:obj_list
+/	a:word
+
+obj_list
+<-	l:obj_list WS+ r:word_or_object
+/	r:word_or_object
+
+word_or_object
+<-	word
+/	object
+
+word
+<-	variable
+/	command_substitution
+/	SIMPLE_WORD
+
+command_substitution
+<-	'$('
+	NL*
+	l:nl_list
+	NL*
+	')'
+
+object
+<-	dict
+/	list
+
+dict
+<-	'{' NL_WS '}'
+/	'{' NL_WS di:dict_items NL_WS ','? NL_WS '}'
+
+dict_items
+<-	l:dict_items
+	NL_WS ',' NL_WS
+	k:obj_entry
+	NL_WS ':' NL_WS
+	v:obj_entry
+/	k:obj_entry
+	NL_WS ':' NL_WS
+	v:obj_entry
+
+list
+<-	'[' NL_WS ']'
+/	'[' NL_WS li:list_items NL_WS ','? NL_WS ']'
+
+list_items
+<-	l:list_items
+	NL_WS ',' NL_WS
+	v:obj_entry
+/	v:obj_entry
+
+# special kind of words
+obj_entry
+<-	variable
+/	command_substitution
+/	object
+/	OBJ_WORD
+
+variable
+<-	'$' IDENT
+#/	'${' variable_exp '}'
+
+# TODO allow special stuff like subscripts
+# well, only subscripts (getitem and stuff)
+variable_exp
+<-	IDENT
+

@@ -1,0 +1,77 @@
+#
+# helpers for grammar
+#
+# keywords and token definitions
+#
+
+# TODO should be able to include SEMIs, e.g.:
+# command ; NL
+NL	<- WS* '\n' / WS* '#' [^\n]* '\n'
+
+WS
+<-	[ \t]
+/	"\\\n"
+
+NL_WS	<- NL* WS*
+
+EOF	<- !.
+
+SEMI	<- WS* ';'
+
+AND	<- '&&'
+OR	<- '||'
+PIPE	<- '|' !'|'
+
+SEP	<- SEMI NL* / NL+
+
+# keywords
+
+_DELIM	<- [ \t;|&#]
+
+IF	<- 'if' &_DELIM
+THEN	<- 'then' &_DELIM
+FI	<- 'fi' &_DELIM
+ELSE	<- 'else' &_DELIM
+ELIF	<- 'elif' &_DELIM
+WHILE	<- 'while' &_DELIM
+DO	<- 'do' &_DELIM
+DONE	<- 'done' &_DELIM
+DEF	<- 'def' &_DELIM
+FOR	<- 'for' &_DELIM
+IN	<- 'in' &_DELIM
+
+# words
+
+IDENT	<- [a-zA-Z_][a-zA-Z0-9_]
+SIMPLE_WORD
+<-	QUOTED_WORD
+/	CHAR+
+
+CHAR
+<-	"\\ "
+/	"\\" '\n'
+/	[^ \t;|&{}[\]]
+
+QUOTED_WORD
+<- ['] SQ_CHAR* [']
+/  ["] DQ_CHAR* ["]
+
+DQ_CHAR
+<-	'\\"'
+/	"\\" .
+/	[^"]
+
+SQ_CHAR
+<-	"\\'"
+/	"\\" .
+/	[^']
+
+# inside objects it's a bit special
+OBJ_WORD
+<-	QUOTED_WORD
+/	OCHAR+
+
+OCHAR
+<-	"\\ "
+/	"\\" '\n'
+/	[^ \t:,{}[\]]
