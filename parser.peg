@@ -2,47 +2,113 @@
 # grammar file (packcc)
 #
 
+%earlyheader {
+struct pash;
+}
+
 %header {
 #include "ast.h"
 }
 
-%import "defs.peg"
 %value "ast_node_t *"
+
+%auxil "struct pash *"
+
+%earlysource {
+#include "pash_internal.h"
+}
+
+%source {
+#define PCC_GETCHAR(auxil) pash_getchar(auxil);
+}
 
 full_command
 <-	NL
+	{ $$ = ast_semi_new(NULL); }
 /	WS* EOF
+	{ $$ = NULL; }
 /	l:semi_list NL
+	{ $$ = l; }
 /	l:semi_list WS* EOF
+	{ $$ = l; }
 
 # TODO maybe use "SEMI_SEP" to account for WS
 semi_list
 <-	l:semi_list SEMI r:and_or
+	{
+		$$ = ast_semi_append(
+			l->kind == AST_SEMI_LIST
+			? l
+			: ast_semi_new(l),
+			r
+		);
+	}
 /	r:and_or
+	{ $$ = r; }
 
 nl_list
 <-	l:nl_list SEP r:and_or
+	{
+		$$ = ast_semi_append(
+			l->kind == AST_SEMI_LIST
+			? l
+			: ast_semi_new(l),
+			r
+		);
+	}
 /	r:and_or
+	{ $$ = r; }
 
 and_or
 <-	l:and_or WS* AND NL* r:pipeline
+	{ $$ = ast_and_or_new(l, 1, r); }
 /	l:and_or WS* OR NL* r:pipeline
+	{ $$ = ast_and_or_new(l, 0, r); }
 /	r:pipeline
+	{ $$ = r; }
 
 pipeline
 <-	l:pipeline WS* PIPE NL* r:command
+	{
+		$$ = ast_pipeline_append(
+			l->kind == AST_PIPELINE
+			? l
+			: ast_pipeline_new(l),
+			r
+		);
+	}
 /	r:command
+	{ $$ = r; }
 
+# FIXME at least one of them
 command
-<-	WS* _command
+<-	WS* a:assignments c:inner_command
+	{ $$ = ast_command_new(a, c); }
+/	WS* a:assignments
+	{ $$ = ast_command_new(a, NULL); }
+/	WS* c:inner_command
+	{ $$ = ast_command_new(NULL, c); }
 
-_command
-<-	if_command
-/	while_command
-/	for_command
-/	compound_command
-/	def_command
-/	simple_command
+# TODO transform in dict
+assignments
+<-	l:assignments WS+ < IDENT > '=' v:word_or_object?
+	{ $$ = ast_dict_append(l, ast_word_new($1), v); }
+/	< IDENT > '=' v:word_or_object?
+	{ $$ = ast_dict_new(ast_word_new($2), v); }
+
+inner_command
+<-	c:if_command
+	{ $$ = c; }
+/	c:while_command
+	{ $$ = c; }
+/	c:for_command
+	{ $$ = c; }
+/	c:compound_command
+	{ $$ = c; }
+/	c:def_command
+	{ $$ = c; }
+/	c:simple_command
+	{ $$ = c; }
 
 if_command
 <-	IF
@@ -53,14 +119,16 @@ if_command
 	NL*
 	b:nl_list
 	SEP
-	else_branch?
+	e:else_branch?
 	FI
+	{ $$ = ast_if_new(c, b, e); }
 
 else_branch
 <-	ELSE
 	NL*
 	b:nl_list
 	SEP
+	{ $$ = b; }
 /	ELIF
 	NL*
 	c:nl_list
@@ -69,7 +137,8 @@ else_branch
 	NL*
 	b:nl_list
 	SEP
-	else_branch?
+	e:else_branch?
+	{ $$ = ast_if_new(c, b, e); }
 
 while_command
 <-	WHILE
@@ -81,10 +150,12 @@ while_command
 	b:nl_list
 	SEP
 	DONE
+	{ $$ = ast_while_new(c, b); }
 
+# FIXME need helper to read IDENT
 for_command
 <-	FOR
-	i:IDENT
+	< IDENT >
 	IN
 	l:obj_list
 	SEP
@@ -93,6 +164,7 @@ for_command
 	b:nl_list
 	SEP
 	DONE
+	{ $$ = ast_for_new($1, l, b); }
 
 # TODO probably need to verify that it's a single '{' (e.g. not '{{{')
 compound_command
@@ -101,28 +173,39 @@ compound_command
 	b:nl_list
 	SEP
 	'}'
+	{ $$ = b; }
 
 def_command
-<-	n:IDENT WS*
+<-	< IDENT > WS*
 	'(' WS* ')' WS*
 	b:compound_command
+	{ $$ = ast_def_new($1, b); }
 
 simple_command
-<-	a:word WS+ b:obj_list
-/	a:word
+<-	l:simple_command WS+ r:word_or_object
+	{ $$ = ast_word_list_append(l, r); }
+/	r:word
+	{ $$ = ast_word_list_new(r); }
 
 obj_list
 <-	l:obj_list WS+ r:word_or_object
+	{ $$ = ast_word_list_append(l, r); }
 /	r:word_or_object
+	{ $$ = ast_word_list_new(r); }
 
 word_or_object
-<-	word
-/	object
+<-	r:word
+	{ $$ = r; }
+/	r:object
+	{ $$ = r; }
 
 word
-<-	variable
-/	command_substitution
-/	SIMPLE_WORD
+<-	v:variable
+	{ $$ = v; }
+/	v:command_substitution
+	{ $$ = v; }
+/	< SIMPLE_WORD >
+	{ $$ = ast_word_new($1); /* FIXME need helper to parse quoted strings */}
 
 command_substitution
 <-	'$('
@@ -130,14 +213,19 @@ command_substitution
 	l:nl_list
 	NL*
 	')'
+	{ $$ = ast_command_exp_new(l); }
 
 object
-<-	dict
-/	list
+<-	d:dict
+	{ $$ = d; }
+/	l:list
+	{ $$ = l; }
 
 dict
 <-	'{' NL_WS '}'
+	{ $$ = ast_dict_new(NULL, NULL); }
 /	'{' NL_WS di:dict_items NL_WS ','? NL_WS '}'
+	{ $$ = di; }
 
 dict_items
 <-	l:dict_items
@@ -145,33 +233,48 @@ dict_items
 	k:obj_entry
 	NL_WS ':' NL_WS
 	v:obj_entry
+	{ $$ = ast_dict_append(l, k, v); }
 /	k:obj_entry
 	NL_WS ':' NL_WS
 	v:obj_entry
+	{ $$ = ast_dict_new(k, v); }
 
 list
 <-	'[' NL_WS ']'
+	{ $$ = ast_list_new(NULL); }
 /	'[' NL_WS li:list_items NL_WS ','? NL_WS ']'
+	{ $$ = li; }
 
 list_items
 <-	l:list_items
 	NL_WS ',' NL_WS
 	v:obj_entry
+	{ $$ = ast_list_append(l, v); }
 /	v:obj_entry
+	{ $$ = ast_list_new(v); }
 
 # special kind of words
 obj_entry
-<-	variable
-/	command_substitution
-/	object
-/	OBJ_WORD
+<-	v:variable
+	{ $$ = v; }
+/	c:command_substitution
+	{ $$ = c; }
+/	o:object
+	{ $$ = o; }
+/	< OBJ_WORD >
+	{ $$ = ast_word_new($1); /* FIXME need helper to parse quoted strings */}
 
 variable
-<-	'$' IDENT
-#/	'${' variable_exp '}'
+<-	'$' < IDENT >
+	{ $$ = ast_var_new($1); }
+/	'${' v:variable_exp '}'
+	{ $$ = v; }
 
 # TODO allow special stuff like subscripts
 # well, only subscripts (getitem and stuff)
 variable_exp
-<-	IDENT
+<-	< IDENT >
+	{ $$ = ast_var_new($1); }
 
+# imports at the end to avoid overriding the default rule
+%import "defs.peg"

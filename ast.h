@@ -7,6 +7,8 @@ typedef enum ast_kind {
 	AST_SEMI_LIST,
 	AST_AND_OR,
 	AST_PIPELINE,
+
+	AST_COMMAND,
 	AST_IF,
 	AST_WHILE,
 	AST_FOR,
@@ -46,6 +48,12 @@ typedef struct ast_pipeline {
 	int count;
 	ast_node_t **nodes;
 } ast_pipeline_t;
+
+typedef struct ast_command {
+	ast_kind_t kind;
+	ast_node_t *assignments;
+	ast_node_t *inner_command;
+} ast_command_t;
 
 typedef struct ast_if {
 	ast_kind_t kind;
@@ -124,26 +132,29 @@ ast_node_t *ast_pipeline_new(ast_node_t *init);
 ast_node_t * ast_pipeline_append(ast_node_t *pipeline, ast_node_t *item);
 void ast_pipeline_free(ast_node_t *pipeline);
 
+ast_node_t *ast_command_new(ast_node_t *assignments, ast_node_t *inner_command);
+void ast_command_free(ast_node_t *command);
+
 ast_node_t *ast_if_new(ast_node_t *condition, ast_node_t *then_branch, ast_node_t *else_branch);
 void ast_if_free(ast_node_t *node);
 
 ast_node_t *ast_while_new(ast_node_t *condition, ast_node_t *body);
 void ast_while_free(ast_node_t *node);
 
-ast_node_t *ast_for_new(char *ident, ast_node_t *list, ast_node_t *body);
+ast_node_t *ast_for_new(const char *ident, ast_node_t *list, ast_node_t *body);
 void ast_for_free(ast_node_t *node);
 
-ast_node_t *ast_def_new(char *ident, ast_node_t *body);
+ast_node_t *ast_def_new(const char *ident, ast_node_t *body);
 void ast_def_free(ast_node_t *node);
 
 ast_node_t *ast_word_list_new(ast_node_t *init);
 ast_node_t *ast_word_list_append(ast_node_t *wlist, ast_node_t *item);
 void ast_word_list_free(ast_node_t *node);
 
-ast_node_t *ast_word_new(char *word);
+ast_node_t *ast_word_new(const char *word);
 void ast_word_free(ast_node_t *node);
 
-ast_node_t *ast_var_new(char *word);
+ast_node_t *ast_var_new(const char *word);
 void ast_var_free(ast_node_t *node);
 
 ast_node_t *ast_command_exp_new(ast_node_t *command);

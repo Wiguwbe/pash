@@ -5,7 +5,6 @@
 #include "pash.h"
 
 // if printer_define
-#include "pash.tab.h"
 #include "printer.h"
 
 void yyerror(void *_unused, char *msg)
@@ -24,15 +23,16 @@ int main()
 	}
 #endif
 
-	struct pash pash;
-	if (init_pash(&pash, NULL))
+	struct pash *pash;
+	pash = init_pash_file(stdin);
+	if (!pash)
 	{
 		perror("wtf");
 		return 1;
 	}
 	while (1)
 	{
-		ast_node_t *cmd = parse_command(&pash);
+		ast_node_t *cmd = parse_command(pash);
 
 		printf("cmd: %p\n", cmd);
 
@@ -47,7 +47,7 @@ int main()
 		// ast_free(cmd)
 	}
 
-	// TODO free stuff
+	pash_free(pash);
 
 	return 0;
 }

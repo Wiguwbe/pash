@@ -19,6 +19,7 @@ static void (*freers[])(ast_node_t *) = {
 	[AST_SEMI_LIST]	= ast_semi_free,
 	[AST_AND_OR]	= ast_and_or_free,
 	[AST_PIPELINE]	= ast_pipeline_free,
+	[AST_COMMAND]	= ast_command_free,
 	[AST_IF]	= ast_if_free,
 	[AST_WHILE]	= ast_while_free,
 	[AST_FOR]	= ast_for_free,
@@ -147,6 +148,31 @@ void ast_pipeline_free(ast_node_t *node)
 	free(pl);
 }
 
+ast_node_t *ast_command_new(ast_node_t *assignment, ast_node_t *inner_command)
+{
+	ast_command_t *cmd = (ast_command_t*)malloc(sizeof(ast_command_t));
+	CHECK_MEM(cmd);
+
+	cmd->kind = AST_COMMAND;
+	cmd->assignments = assignment;
+	cmd->inner_command = inner_command;
+
+	return (ast_node_t*)cmd;
+}
+
+void ast_command_free(ast_node_t *node)
+{
+	CHECK_KIND(node, AST_COMMAND);
+	ast_command_t *cmd = (ast_command_t*)node;
+
+	if (cmd->assignments)
+		free(cmd->assignments);
+	if (cmd->inner_command)
+		free(cmd->inner_command);
+
+	free(cmd);
+}
+
 ast_node_t *ast_if_new(ast_node_t *cond, ast_node_t *then, ast_node_t *else_)
 {
 	ast_if_t *if_n = (ast_if_t*)malloc(sizeof(ast_if_t));
@@ -194,7 +220,7 @@ void ast_while_free(ast_node_t *node)
 	free(while_n);
 }
 
-ast_node_t *ast_for_new(char *ident, ast_node_t *list, ast_node_t *body)
+ast_node_t *ast_for_new(const char *ident, ast_node_t *list, ast_node_t *body)
 {
 	ast_for_t *for_n = (ast_for_t*)malloc(sizeof(ast_for_t));
 	CHECK_MEM(for_n);
@@ -218,7 +244,7 @@ void ast_for_free(ast_node_t *node)
 	free(for_n);
 }
 
-ast_node_t *ast_def_new(char *ident, ast_node_t *body)
+ast_node_t *ast_def_new(const char *ident, ast_node_t *body)
 {
 	ast_def_t *def = (ast_def_t*)malloc(sizeof(ast_def_t*));
 	CHECK_MEM(def);
@@ -281,7 +307,7 @@ void ast_word_list_free(ast_node_t *node)
 	free(wl);
 }
 
-ast_node_t *ast_word_new(char *word)
+ast_node_t *ast_word_new(const char *word)
 {
 	ast_word_t *w = (ast_word_t*)malloc(sizeof(ast_word_t));
 	CHECK_MEM(w);
@@ -300,7 +326,7 @@ void ast_word_free(ast_node_t *node)
 	free(w);
 }
 
-ast_node_t *ast_var_new(char *var)
+ast_node_t *ast_var_new(const char *var)
 {
 	ast_var_t *v = (ast_var_t*)malloc(sizeof(ast_var_t));
 	CHECK_MEM(v);

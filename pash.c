@@ -1,53 +1,104 @@
+#include <stdlib.h>
+#include <string.h>
 
-
-#include <stdio.h>
-
+#include "parser.gen.h"
 #include "pash.h"
-#include "pash.tab.h"
-#include "pash.yy.h"
+#include "pash_internal.h"
 
-int init_pash(struct pash *pash, FILE *file)
+static struct pash *init_pash_generic(void)
 {
-	if (yylex_init(&pash->scanner))
-		return 1;
+	struct pash *p = (struct pash*)malloc(sizeof(struct pash));
+	if (!p)
+		return NULL;
 
-	pash->parser = yypstate_new();
-	if (!pash->parser)
+	memset(p, 0, sizeof(struct pash));
+
+	pcc_context_t *pcc_context = pcc_create(p);
+	if (!pcc_context)
 	{
-		yylex_destroy(pash->scanner);
-		return 1;
+		free(p);
+		return NULL;
 	}
+	p->pcc_context = pcc_context;
 
-	// set file
-	if (file)
-		yyset_in(file, pash->scanner);
-
-	return 0;
+	return p;
 }
 
-// TODO free pash
-
-ast_node_t *parse_command(struct pash *pash)
+void pash_free(struct pash *p)
 {
-	YYSTYPE lval;
-	int token;
-	ast_node_t *node;
-	int status = YYPUSH_MORE;
+	pcc_destroy(p->pcc_context);
+	free(p);
+}
 
-	while (status == YYPUSH_MORE)
+
+struct pash *init_pash_file(FILE *file)
+{
+	struct pash *p = init_pash_generic();
+	if (!p)
+		return NULL;
+
+	p->reader_type = READER_FILE;
+	p->reader.file.file = file;
+
+	return p;
+}
+
+struct pash *init_pash_string(char *input)
+{
+	struct pash *p = init_pash_generic();
+	if (!p)
+		return NULL;
+
+	p->reader_type = READER_STRING;
+	p->reader.string.input = input;
+
+	return p;
+}
+
+struct pash *init_pash_callback(int (*getchar)(void *), void *ud)
+{
+	struct pash *p = init_pash_generic();
+	if (!p)
+		return NULL;
+
+	p->reader_type = READER_CUSTOM;
+	p->reader.custom.callback = getchar;
+	p->reader.custom.user_data = ud;
+
+	return p;
+}
+
+int pash_getchar(struct pash *p)
+{
+	int c;
+	switch(p->reader_type)
 	{
-		// where does lval go?
-		token = yylex(&lval, pash->scanner);
-
-		status = yypush_parse(pash->parser, token, &lval, &node);
-
-		if (status == 1)
-			// parse error
-			return NULL;
-		if (status == 2)
-			// allocation error
-			return NULL;
+	case READER_FILE:
+		c = fgetc(p->reader.file.file);
+		if (c == EOF)
+			c = -1;
+		break;
+	case READER_STRING:
+		c = *p->reader.string.input;
+		if (c == 0)
+			c = -1;
+		else
+			p->reader.string.input ++;
+		break;
+	case READER_CUSTOM:
+		c = p->reader.custom.callback(p->reader.custom.user_data);
 	}
+
+	return c;
+}
+
+ast_node_t *parse_command(struct pash *p)
+{
+	ast_node_t *node = NULL;
+
+	int needs_more = pcc_parse(p->pcc_context, &node);
+
+	// do something with `needs_more`?
 
 	return node;
 }

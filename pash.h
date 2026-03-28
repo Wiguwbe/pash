@@ -1,19 +1,19 @@
 #ifndef _PASH_PASH_H_
 #define _PASH_PASH_H_
 
-#include "ast.h"
-#include "pash.tab.h"
-#include "pash.yy.h"
+#include <stdio.h>
 
-// TODO make it as an object
-struct pash {
-	yyscan_t scanner;
-	yypstate *parser;
-};
+#include "ast.h"
+
+struct pash;
 
 // FILE or fd?
-int init_pash(struct pash *pash, FILE *file);
+struct pash *init_pash_file(FILE *file);
+struct pash *init_pash_string(char *input);
+struct pash *init_pash_callback(int (*getchar)(void *), void *user_data);
 
 ast_node_t *parse_command(struct pash*);
+
+void pash_free(struct pash *);
 
 #endif
