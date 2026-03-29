@@ -445,3 +445,69 @@ void ast_list_free(ast_node_t *node)
 
 static const ast_node_t _empty_line = {AST_NONE};
 const ast_node_t *empty_line = &_empty_line;
+
+char *ast_parse_string(const char *in)
+{
+	size_t len = strlen(in);
+	// it's probably less than the original
+	char *out = (char*)malloc(len + 1);
+	CHECK_MEM(out);
+
+	char *o_ptr = out;
+	char *i_ptr = (char*)in;
+	char end = 0;
+	char quote = *i_ptr;
+	int quoted = quote == '"' || quote == '\'';
+	if (quoted)
+	{
+		// start later
+		i_ptr++;
+		end = quote;
+	}
+
+	// if not quoted:
+	//	escape spaces and newlines
+	// if quoted:
+	//	escape quotes only
+	// always:
+	//	escape backslashes
+	while(*i_ptr && *i_ptr != end)
+	{
+		char next;
+		if (*i_ptr == '\\')
+		{
+			next = i_ptr[1];
+			if (next == '\\')
+				goto _unescape;
+			if (quoted && next == quote)
+				goto _unescape;
+			if (!quoted)
+			{
+				if (next == ' ')
+					goto _unescape;
+				if (next == '\n')
+				{
+					// ignore
+					i_ptr+=2;
+					continue;
+				}
+			}
+			// else, fallthrough
+		}
+		// else, fallthrough
+
+	_copy:
+		*o_ptr = *i_ptr;
+		goto _next;
+	_unescape:
+		*o_ptr = next;
+		i_ptr++;
+	_next:
+		o_ptr ++;
+		i_ptr ++;
+	}
+
+	*o_ptr = 0;
+
+	return out;
+}

@@ -5,7 +5,6 @@
 #include "ast.h"
 #include "pash.h"
 
-// if printer_define
 #include "printer.h"
 
 void yyerror(void *_unused, char *msg)
@@ -14,11 +13,21 @@ void yyerror(void *_unused, char *msg)
 	exit(1);
 }
 
-int main()
+int main(int argc, char **argv)
 {
+	FILE *input = stdin;
+	if (argc == 2)
+	{
+		input = fopen(argv[1], "r");
+		if (!input)
+		{
+			perror("failed to open file");
+			abort();
+		}
+	}
 
 	struct pash *pash;
-	pash = init_pash_file(stdin);
+	pash = init_pash_file(input);
 	if (!pash)
 	{
 		perror("wtf");
@@ -41,15 +50,14 @@ int main()
 		if (!cmd)
 			break;
 
-		//printf("GOT A COMMAND\n");
 		print_ast(cmd);
 		ast_node_free(cmd);
-
-		// execute(cmd)
-		// ast_free(cmd)
 	}
 
 	pash_free(pash);
+
+	if (input != stdin)
+		fclose(input);
 
 	return 0;
 }

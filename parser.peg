@@ -83,7 +83,6 @@ pipeline
 /	r:command
 	{ $$ = r; }
 
-# FIXME at least one of them
 command
 <-	WS* a:assignments WS+ c:inner_command
 	{ $$ = ast_command_new(a, c); }
@@ -155,7 +154,6 @@ while_command
 	DONE
 	{ $$ = ast_while_new(c, b); }
 
-# FIXME need helper to read IDENT
 for_command
 <-	FOR
 	< IDENT >
@@ -187,7 +185,7 @@ def_command
 simple_command
 <-	l:simple_command WS+ r:word_or_object
 	{ $$ = ast_word_list_append(l, r); }
-/	r:word
+/	r:first_word
 	{ $$ = ast_word_list_new(r); }
 
 obj_list
@@ -202,13 +200,22 @@ word_or_object
 /	r:object
 	{ $$ = r; }
 
+first_word
+<-	!(KEYWORD) w:word
+	{ $$ = w; }
+
 word
 <-	v:variable
 	{ $$ = v; }
 /	v:command_substitution
 	{ $$ = v; }
 /	< SIMPLE_WORD >
-	{ $$ = ast_word_new($1); /* FIXME need helper to parse quoted strings */}
+	{
+		char *_save_word = ast_parse_string($1);
+		$$ = ast_word_new(_save_word);
+		/* it copies it */
+		free(_save_word);
+	}
 
 command_substitution
 <-	'$('
@@ -265,7 +272,12 @@ obj_entry
 /	o:object
 	{ $$ = o; }
 /	< OBJ_WORD >
-	{ $$ = ast_word_new($1); /* FIXME need helper to parse quoted strings */}
+	{
+		char *_save_word = ast_parse_string($1);
+		$$ = ast_word_new(_save_word);
+		/* it copies it */
+		free(_save_word);
+	}
 
 variable
 <-	'$' < IDENT >

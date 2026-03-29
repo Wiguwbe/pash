@@ -26,7 +26,19 @@ SEP	<- SEMI NL* / NL+
 
 # keywords
 
-_DELIM	<- [ \t;|&#]
+_DELIM	<- [ \t;|&#\n]
+
+KEYWORD
+<-	IF
+/	THEN
+/	FI
+/	ELSE
+/	ELIF
+/	WHILE
+/	DO
+/	DONE
+/	FOR
+/	IN
 
 IF	<- 'if' &_DELIM
 THEN	<- 'then' &_DELIM
@@ -36,7 +48,6 @@ ELIF	<- 'elif' &_DELIM
 WHILE	<- 'while' &_DELIM
 DO	<- 'do' &_DELIM
 DONE	<- 'done' &_DELIM
-DEF	<- 'def' &_DELIM
 FOR	<- 'for' &_DELIM
 IN	<- 'in' &_DELIM
 

@@ -171,4 +171,7 @@ ast_node_t *ast_list_new(ast_node_t *init);
 ast_node_t *ast_list_append(ast_node_t *list, ast_node_t *value);
 void ast_list_free(ast_node_t *node);
 
+// helper to parse/read a quoted string
+char *ast_parse_string(const char *in);
+
 #endif
