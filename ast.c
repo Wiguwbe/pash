@@ -443,3 +443,5 @@ void ast_list_free(ast_node_t *node)
 	free(list);
 }
 
+static const ast_node_t _empty_line = {AST_NONE};
+const ast_node_t *empty_line = &_empty_line;

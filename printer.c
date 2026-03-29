@@ -11,6 +11,7 @@ static int indent;
 static void print_semi_list(ast_node_t *node);
 static void print_and_or(ast_node_t *node);
 static void print_pipeline(ast_node_t *node);
+static void print_command(ast_node_t *node);
 static void print_if(ast_node_t *node);
 static void print_while(ast_node_t *node);
 static void print_for(ast_node_t *node);
@@ -27,6 +28,7 @@ static void (*printers[])(ast_node_t *node) = {
 	[AST_SEMI_LIST]	= print_semi_list,
 	[AST_AND_OR]	= print_and_or,
 	[AST_PIPELINE]	= print_pipeline,
+	[AST_COMMAND]	= print_command,
 	[AST_IF]	= print_if,
 	[AST_WHILE]	= print_while,
 	[AST_FOR]	= print_for,
@@ -108,6 +110,25 @@ static void print_pipeline(ast_node_t *node)
 	{
 		print(pl->nodes[i]);
 	}
+	indent -= 2;
+	iprintf(")\n");
+}
+
+static void print_command(ast_node_t *node)
+{
+	ast_command_t *cmd = (ast_command_t*)node;
+	iprintf("COMMAND(\n");
+	indent += 2;
+	if (cmd->assignments)
+	{
+		iprintf("ASSIGNMENTS(\n");
+		indent += 2;
+		print(cmd->assignments);
+		indent -= 2;
+		iprintf(")\n");
+	}
+	if (cmd->inner_command)
+		print(cmd->inner_command);
 	indent -= 2;
 	iprintf(")\n");
 }

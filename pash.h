@@ -12,6 +12,8 @@ struct pash *init_pash_file(FILE *file);
 struct pash *init_pash_string(char *input);
 struct pash *init_pash_callback(int (*getchar)(void *), void *user_data);
 
+void pash_set_debug(struct pash *, int);
+
 ast_node_t *parse_command(struct pash*);
 
 void pash_free(struct pash *);

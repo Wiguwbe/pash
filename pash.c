@@ -102,3 +102,38 @@ ast_node_t *parse_command(struct pash *p)
 
 	return node;
 }
+
+void pash_set_debug(struct pash *p, int d)
+{
+	p->debug = d;
+}
+
+static const char *dbg_str[] = {
+	"Evaluating rule",
+	"Matched rule",
+	"Abandoning rule",
+};
+void pash_debug(
+	struct pash *p,
+	int level,
+	int event,
+	char *rule,
+	int pos,
+	char *buffer,
+	int length
+)
+{
+	if (!p->debug)
+		return;
+
+	fprintf(
+		stderr,
+		"%*s%s %s @%zu [%.*s]\n",
+		level * 2, "",
+		dbg_str[event],
+		rule,
+		pos,
+		length,
+		buffer
+	);
+}

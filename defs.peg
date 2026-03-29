@@ -42,7 +42,7 @@ IN	<- 'in' &_DELIM
 
 # words
 
-IDENT	<- [a-zA-Z_][a-zA-Z0-9_]
+IDENT	<- [a-zA-Z_][a-zA-Z0-9_]*
 SIMPLE_WORD
 <-	QUOTED_WORD
 /	CHAR+
@@ -50,7 +50,7 @@ SIMPLE_WORD
 CHAR
 <-	"\\ "
 /	"\\" '\n'
-/	[^ \t;|&{}[\]]
+/	[^ \t;|&{}[\]\n]
 
 QUOTED_WORD
 <- ['] SQ_CHAR* [']

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ast.h"
 #include "pash.h"
 
 // if printer_define
@@ -15,13 +16,6 @@ void yyerror(void *_unused, char *msg)
 
 int main()
 {
-#ifdef YYDEBUG
-	{
-		char *yydebug_env = getenv("YYDEBUG");
-		if (yydebug_env && *yydebug_env == '1')
-			yydebug = 1;
-	}
-#endif
 
 	struct pash *pash;
 	pash = init_pash_file(stdin);
@@ -30,11 +24,19 @@ int main()
 		perror("wtf");
 		return 1;
 	}
+	{
+		char *pcc_debug_env = getenv("PCC_DEBUG");
+		if (pcc_debug_env && *pcc_debug_env == '1')
+			pash_set_debug(pash, 1);
+	}
 	while (1)
 	{
 		ast_node_t *cmd = parse_command(pash);
 
-		printf("cmd: %p\n", cmd);
+		if (cmd == empty_line)
+			continue;
+
+		fprintf(stderr, "cmd: %p\n", cmd);
 
 		if (!cmd)
 			break;

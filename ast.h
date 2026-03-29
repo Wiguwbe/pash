@@ -118,6 +118,9 @@ typedef struct ast_list {
 	ast_node_t **items;
 } ast_list_t;
 
+// instead of returning an empty list at empty line, return this:
+extern const ast_node_t *empty_line;
+
 // generic destructor
 void ast_node_free(ast_node_t *node);
 
