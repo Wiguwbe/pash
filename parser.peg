@@ -117,10 +117,12 @@ if_command
 	NL*
 	c:nl_list
 	SEP
+	WS*
 	THEN
 	NL*
 	b:nl_list
 	SEP
+	WS*
 	e:else_branch?
 	FI
 	{ $$ = ast_if_new(c, b, e); }
@@ -130,15 +132,18 @@ else_branch
 	NL*
 	b:nl_list
 	SEP
+	WS*
 	{ $$ = b; }
 /	ELIF
 	NL*
 	c:nl_list
 	SEP
+	WS*
 	THEN
 	NL*
 	b:nl_list
 	SEP
+	WS*
 	e:else_branch?
 	{ $$ = ast_if_new(c, b, e); }
 
@@ -147,23 +152,30 @@ while_command
 	NL*
 	c:nl_list
 	SEP
+	WS*
 	DO
 	NL*
 	b:nl_list
 	SEP
+	WS*
 	DONE
 	{ $$ = ast_while_new(c, b); }
 
 for_command
 <-	FOR
+	WS+
 	< IDENT >
+	WS+
 	IN
+	WS+
 	l:obj_list
 	SEP
+	WS*
 	DO
 	NL*
 	b:nl_list
 	SEP
+	WS*
 	DONE
 	{ $$ = ast_for_new($1, l, b); }
 
@@ -173,6 +185,7 @@ compound_command
 	NL*
 	b:nl_list
 	SEP
+	WS*
 	'}'
 	{ $$ = b; }
 
@@ -221,7 +234,7 @@ command_substitution
 <-	'$('
 	NL*
 	l:nl_list
-	NL*
+	NL* WS*
 	')'
 	{ $$ = ast_command_exp_new(l); }
 

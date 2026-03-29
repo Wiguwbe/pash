@@ -1,0 +1,140 @@
+#!/bin/sh
+#
+# enumerates the tests, only to more easily track them, should not be added to
+# version tracking, maybe?
+#
+# should then "extract" this and execute the tests individually
+#
+
+# TEST basic
+
+echo hello world
+
+# TEST strings
+
+"foo"
+"dred maluco"
+"dred \\\"maluco"
+'single\'quotes'
+"multi
+line"
+non-quoted\
+line\
+split
+no\ quote\ but\ spaces
+
+# '
+# shell grammar in vim doesn't capture that above
+
+# TEST semi-list
+
+command 1 ; command 2 ; command 3
+
+# TEST and or
+
+a command && another command || yet another one
+
+we can also &&
+	newlines ||
+	between stuff &&
+	# even comments
+
+	# and empty lines
+
+this is still part of the previous one
+
+# test pipeline
+
+first | second | third
+
+first |
+	second |
+
+# a commment, then
+third
+
+# TEST assignments
+
+var=4 yo=foo
+
+var2=66 foo=yo and run a command
+
+# TEST if
+
+if a command; then we do some things; else other things ; fi
+
+if
+	multiple
+	commands
+then
+	also multiple commands
+elif
+	other things
+then
+	more things
+elif
+	yoyo
+then
+	aaaaa
+fi
+
+if simple; then true; fi
+
+# TEST while
+
+while true; do false; done
+while
+	false && true
+do
+	echo big loop
+done
+
+# TEST for
+
+for var in a big list; do
+	run loop
+done
+
+for var in another list of items
+do run the loop; done
+
+# TEST compound
+
+{
+	execute multiple
+	things
+}
+# FIXME we should probably allow the lack of last ';'
+{ inline; commands ;}
+
+should also | work with pipes | { execute stuff; }
+
+# TEST objects
+
+print [a, list, of, items] and {key: val, dict: true}
+run {
+	command: "echo else",
+	input: null,
+}
+
+# TEST variables
+
+echo ${var_with_braces} $var_wout_braces
+
+# TEST expansion
+
+echo $(run commands) $(
+	should also work
+	with multiline
+	commands
+)
+
+however "$vars inside $(strings) should be parsed" "${literally}"
+
+# TEST functions
+
+foo() {
+	run some things
+	and then
+	return 4
+}

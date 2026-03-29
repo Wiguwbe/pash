@@ -61,7 +61,7 @@ SIMPLE_WORD
 CHAR
 <-	"\\ "
 /	"\\" '\n'
-/	[^ \t;|&{}[\]\n]
+/	[^ \t;|&{}[\]\n)]
 
 QUOTED_WORD
 <- ['] SQ_CHAR* [']
