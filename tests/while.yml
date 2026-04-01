@@ -1,0 +1,35 @@
+command:
+  inner_command:
+    while:
+      command:
+        inner_command:
+          word_list:
+            - word: "true"
+    do:
+      command:
+        inner_command:
+          word_list:
+            - word: "false"
+---
+command:
+  inner_command:
+    while:
+      and_or:
+        left:
+          command:
+            inner_command:
+              word_list:
+                - word: "false"
+        is_and: true
+        right:
+          command:
+            inner_command:
+              word_list:
+                - word: "true"
+    do:
+      command:
+        inner_command:
+          word_list:
+            - word: echo
+            - word: big
+            - word: loop

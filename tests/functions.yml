@@ -1,0 +1,21 @@
+command:
+  inner_command:
+    def: foo
+    as:
+      semi_list:
+        - command:
+            inner_command:
+              word_list:
+                - word: run
+                - word: some
+                - word: things
+        - command:
+            inner_command:
+              word_list:
+                - word: and
+                - word: then
+        - command:
+            inner_command:
+              word_list:
+                - word: return
+                - word: "4"

@@ -1,0 +1,12 @@
+
+a command && another command || yet another one
+
+we can also &&
+	newlines ||
+	between stuff &&
+	# even comments
+
+	# and empty lines
+
+this is still part of the previous one
+

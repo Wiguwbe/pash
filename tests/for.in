@@ -1,0 +1,8 @@
+
+for var in a big list; do
+	run loop
+done
+
+for var in another list of items
+do run the loop; done
+

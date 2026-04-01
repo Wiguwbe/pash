@@ -1,0 +1,6 @@
+command:
+  inner_command:
+    word_list:
+      - word: echo
+      - word: hello
+      - word: world

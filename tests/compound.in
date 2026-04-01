@@ -1,0 +1,10 @@
+
+{
+	execute multiple
+	things
+}
+# FIXME we should probably allow the lack of last ';'
+{ inline; commands ;}
+
+should also | work with pipes | { execute stuff;and more; }
+

@@ -1,0 +1,21 @@
+
+if a command; then we do some things; else other things ; fi
+
+if
+	multiple
+	commands
+then
+	also multiple
+	commands
+elif
+	other things
+then
+	more things
+elif
+	yoyo
+then
+	aaaaa
+fi
+
+if simple; then true; fi
+

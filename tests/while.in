@@ -1,0 +1,8 @@
+
+while true; do false; done
+while
+	false && true
+do
+	echo big loop
+done
+

@@ -1,0 +1,3 @@
+
+echo ${var_with_braces} $var_wout_braces
+

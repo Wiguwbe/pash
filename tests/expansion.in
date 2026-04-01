@@ -1,0 +1,9 @@
+
+echo $(run commands) $(
+	should also work
+	with multiline
+	commands
+)
+
+however "$vars inside $(strings) should be parsed" "${literally}"
+

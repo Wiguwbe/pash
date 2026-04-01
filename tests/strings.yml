@@ -1,0 +1,36 @@
+command:
+  inner_command:
+    word_list:
+      - word: foo
+---
+command:
+  inner_command:
+    word_list:
+      - word: dred maluco
+---
+command:
+  inner_command:
+    word_list:
+      - word: dred \"maluco
+---
+command:
+  inner_command:
+    word_list:
+      - word: single'quotes
+---
+command:
+  inner_command:
+    word_list:
+      - word: |-
+          multi
+          line
+---
+command:
+  inner_command:
+    word_list:
+      - word: non-quotedlinesplit
+---
+command:
+  inner_command:
+    word_list:
+      - word: no quote but spaces

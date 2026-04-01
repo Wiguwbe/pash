@@ -1,0 +1,84 @@
+command:
+  inner_command:
+    if:
+      command:
+        inner_command:
+          word_list:
+            - word: a
+            - word: command
+    then:
+      command:
+        inner_command:
+          word_list:
+            - word: we
+            - word: do
+            - word: some
+            - word: things
+    else:
+      command:
+        inner_command:
+          word_list:
+            - word: other
+            - word: things
+---
+command:
+  inner_command:
+    if:
+      semi_list:
+        - command:
+            inner_command:
+              word_list:
+                - word: multiple
+        - command:
+            inner_command:
+              word_list:
+                - word: commands
+    then:
+      semi_list:
+        - command:
+            inner_command:
+              word_list:
+                - word: also
+                - word: multiple
+        - command:
+            inner_command:
+              word_list:
+                - word: commands
+    else:
+      if:
+        command:
+          inner_command:
+            word_list:
+              - word: other
+              - word: things
+      then:
+        command:
+          inner_command:
+            word_list:
+              - word: more
+              - word: things
+      else:
+        if:
+          command:
+            inner_command:
+              word_list:
+                - word: yoyo
+        then:
+          command:
+            inner_command:
+              word_list:
+                - word: aaaaa
+---
+command:
+  inner_command:
+    if:
+      command:
+        inner_command:
+          word_list:
+            - word: simple
+    then:
+      command:
+        inner_command:
+          word_list:
+            - word: "true"
+

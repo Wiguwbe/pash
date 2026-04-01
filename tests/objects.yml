@@ -1,0 +1,25 @@
+command:
+  inner_command:
+    word_list:
+      - word: print
+      - list:
+        - word: a
+        - word: list
+        - word: of
+        - word: items
+      - word: and
+      - dict:
+        - word: key
+        - word: val
+        - word: dict
+        - word: "true"
+---
+command:
+  inner_command:
+    word_list:
+      - word: run
+      - dict:
+        - word: command
+        - word: echo else
+        - word: input
+        - word: "null"

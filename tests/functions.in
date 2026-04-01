@@ -1,0 +1,6 @@
+
+foo() {
+	run some things
+	and then
+	return 4
+}

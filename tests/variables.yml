@@ -1,0 +1,6 @@
+command:
+  inner_command:
+    word_list:
+      - word: echo
+      - var: var_with_braces
+      - var: var_wout_braces

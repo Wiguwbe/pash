@@ -1,0 +1,50 @@
+command:
+  inner_command:
+    semi_list:
+      - command:
+          inner_command:
+            word_list:
+              - word: execute
+              - word: multiple
+      - command:
+          inner_command:
+            word_list:
+              - word: things
+---
+command:
+  inner_command:
+    semi_list:
+      - command:
+          inner_command:
+            word_list:
+              - word: inline
+      - command:
+          inner_command:
+            word_list:
+              - word: commands
+---
+pipeline:
+  - command:
+      inner_command:
+        word_list:
+          - word: should
+          - word: also
+  - command:
+      inner_command:
+        word_list:
+          - word: work
+          - word: with
+          - word: pipes
+  - command:
+      inner_command:
+        semi_list:
+          - command:
+              inner_command:
+                word_list:
+                  - word: execute
+                  - word: stuff
+          - command:
+              inner_command:
+                word_list:
+                  - word: and
+                  - word: more

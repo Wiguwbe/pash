@@ -1,0 +1,7 @@
+
+print [a, list, of, items] and {key: val, dict: true}
+run {
+	command: "echo else",
+	input: null,
+}
+

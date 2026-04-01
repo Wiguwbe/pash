@@ -31,3 +31,6 @@ parser.gen.o: parser.gen.c parser.gen.h ast.h pash_internal.h
 clean:
 	rm -f *.o *.gen.*
 
+.PHONY: tests
+tests: pash
+	./tests/run.sh

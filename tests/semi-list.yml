@@ -1,0 +1,16 @@
+semi_list:
+  - command:
+      inner_command:
+        word_list:
+          - word: command
+          - word: "1"
+  - command:
+      inner_command:
+        word_list:
+          - word: command
+          - word: "2"
+  - command:
+      inner_command:
+        word_list:
+          - word: command
+          - word: "3"

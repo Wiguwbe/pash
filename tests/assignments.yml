@@ -1,0 +1,21 @@
+command:
+  assignments:
+    dict:
+      - word: var
+      - word: "4"
+      - word: yo
+      - word: foo
+---
+command:
+  assignments:
+    dict:
+      - word: var2
+      - word: "66"
+      - word: foo
+      - word: yo
+  inner_command:
+    word_list:
+      - word: and
+      - word: run
+      - word: a
+      - word: command

@@ -1,0 +1,64 @@
+and_or:
+  left:
+    and_or:
+      left:
+        command:
+          inner_command:
+            word_list:
+              - word: a
+              - word: command
+      is_and: true
+      right:
+        command:
+          inner_command:
+            word_list:
+              - word: another
+              - word: command
+  is_and: false
+  right:
+    command:
+      inner_command:
+        word_list:
+          - word: yet
+          - word: another
+          - word: one
+---
+and_or:
+  left:
+    and_or:
+      left:
+        and_or:
+          left:
+            command:
+              inner_command:
+                word_list:
+                  - word: we
+                  - word: can
+                  - word: also
+          is_and: true
+          right:
+            command:
+              inner_command:
+                word_list:
+                  - word: newlines
+      is_and: false
+      right:
+        command:
+          inner_command:
+            word_list:
+              - word: between
+              - word: stuff
+  is_and: true
+  right:
+    command:
+      inner_command:
+        word_list:
+          - word: this
+          - word: is
+          - word: still
+          - word: part
+          - word: of
+          - word: the
+          - word: previous
+          - word: one
+

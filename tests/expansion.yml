@@ -1,0 +1,34 @@
+command:
+  inner_command:
+    word_list:
+      - word: echo
+      - command_exp:
+          command:
+            inner_command:
+              word_list:
+                - word: run
+                - word: commands
+      - command_exp:
+          semi_list:
+            - command:
+                inner_command:
+                  word_list:
+                    - word: should
+                    - word: also
+                    - word: work
+            - command:
+                inner_command:
+                  word_list:
+                    - word: with
+                    - word: multiline
+            - command:
+                inner_command:
+                  word_list:
+                    - word: commands
+---
+command:
+  inner_command:
+    word_list:
+      - word: however
+      - word: $vars inside $(strings) should be parsed
+      - word: ${literally}

@@ -1,0 +1,27 @@
+pipeline:
+  - command:
+      inner_command:
+        word_list:
+          - word: first
+  - command:
+      inner_command:
+        word_list:
+          - word: second
+  - command:
+      inner_command:
+        word_list:
+          - word: third
+---
+pipeline:
+  - command:
+      inner_command:
+        word_list:
+          - word: first
+  - command:
+      inner_command:
+        word_list:
+          - word: second
+  - command:
+      inner_command:
+        word_list:
+          - word: third

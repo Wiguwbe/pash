@@ -1,0 +1,31 @@
+command:
+  inner_command:
+    for: var
+    in:
+      word_list:
+        - word: a
+        - word: big
+        - word: list
+    do:
+      command:
+        inner_command:
+          word_list:
+            - word: run
+            - word: loop
+---
+command:
+  inner_command:
+    for: var
+    in:
+      word_list:
+        - word: another
+        - word: list
+        - word: of
+        - word: items
+    do:
+      command:
+        inner_command:
+          word_list:
+            - word: run
+            - word: the
+            - word: loop

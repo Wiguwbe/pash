@@ -1,0 +1,15 @@
+
+"foo"
+"dred maluco"
+"dred \\\"maluco"
+'single\'quotes'
+"multi
+line"
+non-quoted\
+line\
+split
+no\ quote\ but\ spaces
+
+# '
+# shell grammar in vim doesn't capture that above
+
