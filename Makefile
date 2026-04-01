@@ -1,7 +1,9 @@
 
 .SUFFIXES:
 
-pash: main.o parser.gen.o ast.o pash.o printer.o
+PRINTER_OBJS := printer.o printer-pretty.o printer-json.o
+
+pash: main.o parser.gen.o ast.o pash.o $(PRINTER_OBJS)
 	$(CC) -o $@ $^
 
 packcc: packcc.o
@@ -15,6 +17,8 @@ parser.gen.c parser.gen.h: parser.peg defs.peg packcc pash_internal.h
 	./packcc -o parser.gen $<
 
 printer.o: printer.c printer.h ast.h
+printer-pretty.o: printer-pretty.c ast.h
+printer-json.o: printer-json.c ast.h
 pash.o: pash.c pash.h ast.h pash_internal.h
 main.o: main.c ast.h printer.h pash.h
 ast.o: ast.c ast.h
