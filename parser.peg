@@ -20,7 +20,6 @@ struct pash;
 
 %source {
 #define PCC_GETCHAR(auxil) pash_getchar(auxil);
-static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
 #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
 	pash_debug((auxil), (level), (event), (rule), (pos), (buffer), (length))
 }
