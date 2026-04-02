@@ -216,6 +216,7 @@ first_word
 <-	!(KEYWORD) w:word
 	{ $$ = w; }
 
+# TODO could do code blocks with parenthesis
 word
 <-	v:variable
 	{ $$ = v; }
@@ -276,6 +277,7 @@ list_items
 	{ $$ = ast_list_new(v); }
 
 # special kind of words
+# TODO same as above, code blocks with parenthesis
 obj_entry
 <-	v:variable
 	{ $$ = v; }

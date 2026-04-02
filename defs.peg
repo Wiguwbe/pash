@@ -78,6 +78,7 @@ SQ_CHAR
 /	[^']
 
 # inside objects it's a bit special
+# TODO could even be _any_ character up to a ',', ':', '}' or ']'
 OBJ_WORD
 <-	QUOTED_WORD
 /	OCHAR+
