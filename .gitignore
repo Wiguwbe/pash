@@ -7,3 +7,4 @@ packcc
 /build/
 *.so
 *.a
+libpash.*

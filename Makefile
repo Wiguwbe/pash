@@ -8,7 +8,7 @@ CORE_OBJS := ast.o parser.gen.o pash.o
 PRINTER_OBJS := printer.o printer-pretty.o printer-json.o
 
 .PHONY: all
-all: pash libpash.so libpash.a
+all: pash libpash.so libpash.a libpash.c libpash.h
 
 pash: main.o $(CORE_OBJS) $(PRINTER_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
@@ -18,6 +18,12 @@ libpash.so: $(CORE_OBJS)
 
 libpash.a: $(CORE_OBJS)
 	$(AR) rcs $@ $^
+
+libpash.c: ast.c parser.gen.c pash.c ast.h ast_internal.h pash.h pash_internal.h parser.gen.h
+	python3 ./amalgamate.py -p libpash -o $@ ast.c pash.c parser.gen.c
+
+libpash.h: ast.h pash.h
+	python3 ./amalgamate.py -p libpash -o $@ $^
 
 packcc: packcc.o
 	$(CC) -o $@ $^
