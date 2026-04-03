@@ -4,4 +4,8 @@ run {
 	command: "echo else",
 	input: null,
 }
-
+cat [
+	list/dict words may have,
+	# but not newlines
+	spaces in it
+]

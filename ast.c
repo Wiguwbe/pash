@@ -1,5 +1,5 @@
 
-#include "ast.h"
+#include "ast_internal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -246,7 +246,7 @@ void ast_for_free(ast_node_t *node)
 
 ast_node_t *ast_def_new(const char *ident, ast_node_t *body)
 {
-	ast_def_t *def = (ast_def_t*)malloc(sizeof(ast_def_t*));
+	ast_def_t *def = (ast_def_t*)malloc(sizeof(ast_def_t));
 	CHECK_MEM(def);
 
 	def->kind = AST_DEF;
@@ -496,7 +496,6 @@ char *ast_parse_string(const char *in)
 		}
 		// else, fallthrough
 
-	_copy:
 		*o_ptr = *i_ptr;
 		goto _next;
 	_unescape:

@@ -7,7 +7,7 @@ struct pash;
 }
 
 %header {
-#include "ast.h"
+#include "ast_internal.h"
 }
 
 %value "ast_node_t *"
@@ -90,7 +90,7 @@ command
 /	WS* c:inner_command
 	{ $$ = ast_command_new(NULL, c); }
 
-# TODO transform in dict
+# transform in dict
 assignments
 <-	l:assignments WS+ < IDENT > '=' v:word_or_object?
 	{ $$ = ast_dict_append(l, ast_word_new($1), v); }
@@ -216,7 +216,6 @@ first_word
 <-	!(KEYWORD) w:word
 	{ $$ = w; }
 
-# TODO could do code blocks with parenthesis
 word
 <-	v:variable
 	{ $$ = v; }
@@ -238,6 +237,7 @@ command_substitution
 	')'
 	{ $$ = ast_command_exp_new(l); }
 
+# TODO could do code blocks with parenthesis
 object
 <-	d:dict
 	{ $$ = d; }

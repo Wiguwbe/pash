@@ -36,7 +36,7 @@ void pash_debug(
 	int level,
 	int event,
 	char *rule,
-	int pos,
+	size_t pos,
 	char *buffer,
 	int length
 );

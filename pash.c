@@ -70,7 +70,7 @@ struct pash *init_pash_callback(int (*getchar)(void *), void *ud)
 
 int pash_getchar(struct pash *p)
 {
-	int c;
+	int c = EOF;
 	switch(p->reader_type)
 	{
 	case READER_FILE:
@@ -118,7 +118,7 @@ void pash_debug(
 	int level,
 	int event,
 	char *rule,
-	int pos,
+	size_t pos,
 	char *buffer,
 	int length
 )

@@ -103,6 +103,18 @@ There shouldn't be any external dependencies other than a C compiler and `make`.
 
 Running `make` should output the `.so`, `.a` and a `pash` binary for tests.
 
+> The `Makefile` will compile everything with `-fPIC`.
+
+There's also a CMake build option, which allows an option `PASH_STATIC_PIC` to
+be set, which will control wether the static archive will be compiled with
+`-fPIC` or not (default NO).
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
 ## Future
 
 There are some things that are planned or could be implemented, such as:

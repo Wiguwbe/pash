@@ -4,3 +4,6 @@
 pash
 *.gen.*
 packcc
+/build/
+*.so
+*.a

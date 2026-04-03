@@ -7,12 +7,6 @@
 
 #include "printer.h"
 
-void yyerror(void *_unused, char *msg)
-{
-	fprintf(stderr, "%s\n", msg);
-	exit(1);
-}
-
 int main(int argc, char **argv)
 {
 	FILE *input = stdin;

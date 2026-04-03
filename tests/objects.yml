@@ -23,3 +23,11 @@ command:
         - word: echo else
         - word: input
         - word: "null"
+---
+command:
+  inner_command:
+    word_list:
+      - word: cat
+      - list:
+        - word: list/dict words may have
+        - word: spaces in it
