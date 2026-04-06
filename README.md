@@ -116,13 +116,20 @@ cmake ..
 make
 ```
 
+To ease integration in other projects, the `Makefile` has rules to create
+amalgamated source and header files:
+
+```
+make libpash.c libpash.h
+```
+
 ## Future
 
 There are some things that are planned or could be implemented, such as:
 - code objects/lambdas/closures, similar to groovy;
 - arithmetic (`$(( stuff ))`), which is probably a _must have_;
 - the `case` control structure;
-- variable suffix operations, like `${var[4][key]}`;
+- variable suffix operations, like `${var[4][key]}` (or done in _arithmetic_);
 - Python bindings/module, similar to how `libdash` does it.
 
 There are some things that are not planned to be implemented at all:
