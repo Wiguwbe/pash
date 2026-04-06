@@ -22,8 +22,8 @@ libpash.a: $(CORE_OBJS)
 libpash.c: ast.c parser.gen.c pash.c ast.h ast_internal.h pash.h pash_internal.h parser.gen.h
 	python3 ./amalgamate.py -p libpash -o $@ ast.c pash.c parser.gen.c
 
-libpash.h: ast.h pash.h
-	python3 ./amalgamate.py -p libpash -o $@ $^
+libpash.h: pash.h ast.h
+	python3 ./amalgamate.py -p libpash -o $@ $<
 
 packcc: packcc.o
 	$(CC) -o $@ $^
