@@ -85,7 +85,8 @@ ast_node_t *command = parse_command(pash);
 if (command == NULL)
     break;
 
-if (command == empty_line)
+if (command->kind == AST_NONE)
+    // empty line/command
     continue;
 
 your_function_to_eval_command(command);
