@@ -22,6 +22,8 @@ typedef enum ast_kind {
 	AST_DICT,
 	AST_LIST,
 
+	AST_SUBSCRIPTS,
+
 	AST__MAX,
 } ast_kind_t;
 
@@ -99,6 +101,7 @@ typedef struct ast_word {
 typedef struct ast_var {
 	ast_kind_t kind;
 	char *var_name;
+	ast_node_t *subscripts;
 } ast_var_t;
 
 typedef struct ast_commpand_exp {
@@ -117,6 +120,12 @@ typedef struct ast_list {
 	int count;
 	ast_node_t **items;
 } ast_list_t;
+
+typedef struct ast_subscripts {
+	ast_kind_t kind;
+	int count;
+	ast_node_t **items;
+} ast_subscripts_t;
 
 // instead of returning an empty list at empty line, return this:
 extern const ast_node_t *empty_line;

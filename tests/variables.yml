@@ -4,3 +4,19 @@ command:
       - word: echo
       - var: var_with_braces
       - var: var_wout_braces
+---
+command:
+  inner_command:
+    word_list:
+      - word: hello
+      - var: word
+        subscripts:
+          subscripts:
+            - word: maluco
+            - word: '67'
+      - var: var
+        subscripts:
+          subscripts:
+            - word: yo
+            - word: oy
+            - word: foo

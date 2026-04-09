@@ -36,7 +36,7 @@ void ast_word_list_free(ast_node_t *node);
 ast_node_t *ast_word_new(const char *word);
 void ast_word_free(ast_node_t *node);
 
-ast_node_t *ast_var_new(const char *word);
+ast_node_t *ast_var_new(const char *word, ast_node_t *subscripts);
 void ast_var_free(ast_node_t *node);
 
 ast_node_t *ast_command_exp_new(ast_node_t *command);
@@ -49,6 +49,10 @@ void ast_dict_free(ast_node_t *dict);
 ast_node_t *ast_list_new(ast_node_t *init);
 ast_node_t *ast_list_append(ast_node_t *list, ast_node_t *value);
 void ast_list_free(ast_node_t *node);
+
+ast_node_t *ast_subscripts_new(ast_node_t *init);
+ast_node_t *ast_subscripts_append(ast_node_t *subscripts, ast_node_t *value);
+void ast_subscripts_free(ast_node_t *node);
 
 // helper to parse/read a quoted string
 char *ast_parse_string(const char *in);

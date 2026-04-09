@@ -1,3 +1,7 @@
 
 echo ${var_with_braces} $var_wout_braces
 
+hello ${word.maluco[  67  ]} $var[
+yo
+][oy].foo
+

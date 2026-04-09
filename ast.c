@@ -326,13 +326,14 @@ void ast_word_free(ast_node_t *node)
 	free(w);
 }
 
-ast_node_t *ast_var_new(const char *var)
+ast_node_t *ast_var_new(const char *var, ast_node_t *subscripts)
 {
 	ast_var_t *v = (ast_var_t*)malloc(sizeof(ast_var_t));
 	CHECK_MEM(v);
 
 	v->kind = AST_VAR;
 	v->var_name = strdup(var);
+	v->subscripts = subscripts;
 
 	return (ast_node_t*)v;
 }
@@ -341,6 +342,8 @@ void ast_var_free(ast_node_t *node)
 	CHECK_KIND(node, AST_VAR);
 	ast_var_t *v = (ast_var_t*)node;
 
+	if (v->subscripts)
+		ast_node_free(v->subscripts);
 	free(v->var_name);
 	free(v);
 }
@@ -441,6 +444,46 @@ void ast_list_free(ast_node_t *node)
 
 	free(list->items);
 	free(list);
+}
+
+ast_node_t *ast_subscripts_new(ast_node_t *init)
+{
+	ast_subscripts_t *subs = (ast_subscripts_t*)malloc(sizeof(ast_subscripts_t));
+	CHECK_MEM(subs);
+
+	subs->kind = AST_SUBSCRIPTS;
+	subs->count = 0;
+	subs->items = NULL;
+
+	if (init)
+		return ast_subscripts_append((ast_node_t*)subs, init);
+
+	return (ast_node_t*)subs;
+}
+
+ast_node_t *ast_subscripts_append(ast_node_t *node, ast_node_t *value)
+{
+	CHECK_KIND(node, AST_SUBSCRIPTS);
+	ast_subscripts_t *subs = (ast_subscripts_t*)node;
+
+	register int new_count = subs->count + 1;
+	register void *nptr = realloc(subs->items, new_count * sizeof(ast_node_t*));
+	CHECK_MEM(nptr);
+	subs->items = (ast_node_t**)nptr;
+	subs->items[subs->count ++] = value;
+
+	return (ast_node_t*)subs;
+}
+
+void ast_subscripts_free(ast_node_t *node)
+{
+	CHECK_KIND(node, AST_SUBSCRIPTS);
+	ast_subscripts_t *subs = (ast_subscripts_t*)node;
+
+	for (int i = 0; i < subs->count; i++)
+		ast_node_free(subs->items[i]);
+	free(subs->items);
+	free(subs);
 }
 
 static const ast_node_t _empty_line = {AST_NONE};

@@ -294,16 +294,34 @@ obj_entry
 	}
 
 variable
-<-	'$' < IDENT >
-	{ $$ = ast_var_new($1); }
+<-	'$' < IDENT > s:subscripts?
+	{ $$ = ast_var_new($1, s); }
 /	'${' v:variable_exp '}'
 	{ $$ = v; }
 
 # TODO allow special stuff like subscripts
 # well, only subscripts (getitem and stuff)
 variable_exp
-<-	< IDENT >
-	{ $$ = ast_var_new($1); }
+<-	< IDENT > s:subscripts?
+	{ $$ = ast_var_new($1, s); }
+
+subscripts
+<-	l:subscripts '[' NL_WS* r:word NL_WS* ']'
+	{ $$ = ast_subscripts_append(l, r); }
+/	l:subscripts '.' < SIMPLE_WORD >
+	{
+		char *_save = ast_parse_string($1);
+		$$ = ast_subscripts_append(l, ast_word_new(_save));
+		free(_save);
+	}
+/	'[' NL_WS* r:word NL_WS* ']'
+	{ $$ = ast_subscripts_new(r); }
+/	'.' < SIMPLE_WORD >
+	{
+		char *_save = ast_parse_string($2);
+		$$ = ast_subscripts_new(ast_word_new(_save));
+		free(_save);
+	}
 
 # imports at the end to avoid overriding the default rule
 %import "defs.peg"

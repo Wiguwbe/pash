@@ -22,6 +22,7 @@ static void print_var(ast_node_t *node);
 static void print_command_exp(ast_node_t *node);
 static void print_dict(ast_node_t *node);
 static void print_list(ast_node_t *node);
+static void print_subscripts(ast_node_t *node);
 
 static void (*printers[])(ast_node_t *node) = {
 	[AST_SEMI_LIST]	= print_semi_list,
@@ -40,6 +41,8 @@ static void (*printers[])(ast_node_t *node) = {
 	[AST_COMMAND_EXP]	= print_command_exp,
 	[AST_DICT]		= print_dict,
 	[AST_LIST]		= print_list,
+
+	[AST_SUBSCRIPTS]	= print_subscripts,
 };
 
 static void print(ast_node_t *node)
@@ -232,7 +235,13 @@ static void print_word(ast_node_t *node)
 static void print_var(ast_node_t *node)
 {
 	ast_var_t *v = (ast_var_t *)node;
-	printf("{\"var\": \"%s\"}\n", v->var_name);
+	printf("{\"var\": \"%s\"\n", v->var_name);
+	if (v->subscripts)
+	{
+		printf(",\"subscripts\":");
+		print_subscripts(v->subscripts);
+	}
+	printf("}\n");
 }
 
 static void print_command_exp(ast_node_t *node)
@@ -269,6 +278,19 @@ static void print_list(ast_node_t *node)
 		if (i)
 			putchar(',');
 		print(list->items[i]);
+	}
+	printf("]}\n");
+}
+
+static void print_subscripts(ast_node_t *node)
+{
+	ast_subscripts_t *subs = (ast_subscripts_t*)node;
+	printf("{\"subscripts\": [\n");
+	for (int i = 0; i<subs->count; i++)
+	{
+		if (i)
+			putchar(',');
+		print(subs->items[i]);
 	}
 	printf("]}\n");
 }
