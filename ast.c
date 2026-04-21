@@ -36,6 +36,8 @@ static void (*freers[])(ast_node_t *) = {
 
 void ast_node_free(ast_node_t *node)
 {
+	if (!node)
+		return;
 	void (*freer)(ast_node_t*) = freers[node->kind];
 	if (!freer)
 	{
