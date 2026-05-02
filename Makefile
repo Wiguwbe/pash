@@ -24,19 +24,25 @@ libpash.a: $(CORE_OBJS)
 libpash.c: ast.c parser.gen.c pash.c ast.h ast_internal.h pash.h pash_internal.h parser.gen.h
 	{
 		echo -n "libpash @ "
-		git describe --tags --exact-match HEAD 2>/dev/null ||
-		git rev-parse --short HEAD
+		{
+			git describe --tags --exact-match HEAD 2>/dev/null ||
+			git rev-parse --short HEAD
+		} | head -n1
+		echo  # empty line
+		cat LICENSE
 	} |
-	head -n1 |
 	python3 ./amalgamate.py -p libpash -P /dev/stdin -o $@ ast.c pash.c parser.gen.c
 
 libpash.h: pash.h ast.h
 	{
 		echo -n "libpash @ "
-		git describe --tags --exact-match HEAD 2>/dev/null ||
-		git rev-parse --short HEAD
+		{
+			git describe --tags --exact-match HEAD 2>/dev/null ||
+			git rev-parse --short HEAD
+		} | head -n1
+		echo  # empty line
+		cat LICENSE
 	} |
-	head -n1 |
 	python3 ./amalgamate.py -p libpash -P /dev/stdin -o $@ $<
 
 packcc: packcc.o
