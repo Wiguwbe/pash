@@ -90,7 +90,11 @@ class Amalgamation(object):
 
 		if self.prologue:
 			with open(self.prologue, 'r') as f:
-				amalgamation += datetime.datetime.now().strftime(f.read())
+				amalgamation += str.join('\n', (
+					"/*",
+					*(f" * {line.rstrip()}" for line in f),
+					" */",
+				)) + "\n\n"
 
 		if self.verbose:
 			print("Config:")

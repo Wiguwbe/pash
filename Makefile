@@ -7,6 +7,8 @@ LDFLAGS :=
 CORE_OBJS := ast.o parser.gen.o pash.o
 PRINTER_OBJS := printer.o printer-pretty.o printer-json.o
 
+.ONESHELL:
+
 .PHONY: all
 all: pash libpash.so libpash.a libpash.c libpash.h
 
@@ -20,10 +22,22 @@ libpash.a: $(CORE_OBJS)
 	$(AR) rcs $@ $^
 
 libpash.c: ast.c parser.gen.c pash.c ast.h ast_internal.h pash.h pash_internal.h parser.gen.h
-	python3 ./amalgamate.py -p libpash -o $@ ast.c pash.c parser.gen.c
+	{
+		echo -n "libpash @ "
+		git describe --tags --exact-match HEAD 2>/dev/null ||
+		git rev-parse --short HEAD
+	} |
+	head -n1 |
+	python3 ./amalgamate.py -p libpash -P /dev/stdin -o $@ ast.c pash.c parser.gen.c
 
 libpash.h: pash.h ast.h
-	python3 ./amalgamate.py -p libpash -o $@ $<
+	{
+		echo -n "libpash @ "
+		git describe --tags --exact-match HEAD 2>/dev/null ||
+		git rev-parse --short HEAD
+	} |
+	head -n1 |
+	python3 ./amalgamate.py -p libpash -P /dev/stdin -o $@ $<
 
 packcc: packcc.o
 	$(CC) -o $@ $^
